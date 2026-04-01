@@ -1,3 +1,84 @@
 [tools]
 erlang = "28.4.1"
 elixir = "1.19.5-otp-28"
+hk = "latest"
+
+# =============================================================================
+# Code Quality
+# =============================================================================
+
+[tasks.precommit-hook]
+run = "hk run pre-commit"
+description = "Run pre-commit hooks via hk"
+
+[tasks.format]
+run = "hk fix"
+description = "Format code using hk fix"
+
+[tasks.check]
+run = "hk check"
+description = "Check code formatting without modifying files"
+
+[tasks."format:all"]
+run = "hk fix --all"
+description = "Format all files in the repository"
+
+[tasks."check:all"]
+run = "hk check --all"
+description = "Check formatting for all files in the repository"
+
+[tasks.credo]
+run = "mix credo"
+description = "Run static analysis"
+
+[tasks."credo:strict"]
+run = "mix credo --strict"
+description = "Run static analysis in strict mode"
+
+[tasks.lint]
+depends = ["check", "credo:strict"]
+description = "Check formatting + credo strict"
+
+# =============================================================================
+# Testing
+# =============================================================================
+
+[tasks.test]
+run = "mix test"
+description = "Run tests"
+
+# =============================================================================
+# Precommit
+# =============================================================================
+
+[tasks."precommit:format"]
+run = "mix format"
+description = "Format Elixir code"
+
+[tasks."precommit:compile"]
+depends = ["precommit:format"]
+run = "mix compile --warnings-as-errors"
+description = "Compile with warnings as errors"
+
+[tasks."precommit:credo"]
+depends = ["precommit:compile"]
+run = "mix credo --strict"
+description = "Run credo strict"
+
+[tasks."precommit:test"]
+depends = ["precommit:compile"]
+run = "mix test"
+description = "Run tests"
+
+[tasks.precommit]
+depends = ["precommit:credo", "precommit:test"]
+description = "Format, compile, then credo + tests in parallel"
+
+# =============================================================================
+# Signoff
+# =============================================================================
+
+[tasks.signoff]
+depends = ["precommit"]
+run = "gh signoff test"
+description = "Run all checks and sign off"

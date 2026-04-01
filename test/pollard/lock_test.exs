@@ -1,13 +1,15 @@
 defmodule Pollard.LockTest do
   use ExUnit.Case
 
+  alias Pollard.Lock.None
+
   describe "Pollard.Lock.None" do
     test "acquire always returns :ok" do
-      assert :ok = Pollard.Lock.None.acquire(nil, [])
+      assert :ok = None.acquire(nil, [])
     end
 
     test "release always returns :ok" do
-      assert :ok = Pollard.Lock.None.release(nil, [])
+      assert :ok = None.release(nil, [])
     end
   end
 

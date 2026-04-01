@@ -6,7 +6,7 @@ defmodule Pollard.Schema do
 
   @primary_key false
   schema "transforms" do
-    field :version, :integer
+    field(:version, :integer)
     timestamps(updated_at: false)
   end
 
