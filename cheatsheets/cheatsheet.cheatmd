@@ -1,0 +1,156 @@
+# Pollard Cheatsheet
+
+## DSL
+
+### Single transform
+
+```elixir
+defmodule MyApp.Transforms.BackfillDetails do
+  use Pollard
+
+  transform "Backfill missing details" do
+    from(s in "shops", where: is_nil(s.details))
+    |> MyApp.Repo.update_all(set: [details: %{}])
+  end
+end
+```
+
+### Multiple transforms (separate transactions)
+
+```elixir
+defmodule MyApp.Transforms.SeedTypes do
+  use Pollard
+
+  transform "Seed product type" do
+    MyApp.Repo.insert_all("types", [%{name: "product"}], on_conflict: :nothing)
+  end
+
+  transform "Seed variant type" do
+    MyApp.Repo.insert_all("types", [%{name: "variant"}], on_conflict: :nothing)
+  end
+end
+```
+
+## Mix Tasks
+
+### Generate a transform
+
+```bash
+mix pollard.gen backfill_shop_details
+# => priv/repo/transforms/20260401120000_backfill_shop_details.exs
+```
+
+### Run pending transforms
+
+```bash
+mix pollard.run
+mix pollard.run --migration-source custom_table
+mix pollard.run --repo MyApp.Repo
+```
+
+### Generate tracking table migration
+
+```bash
+mix pollard.gen.migration
+mix ecto.migrate
+```
+
+## Runner
+
+### Basic usage
+
+```elixir
+Pollard.Runner.run(MyApp.Repo, "priv/repo/transforms")
+```
+
+### Options
+
+{: .col-2}
+
+| Option | Default | Description |
+|---|---|---|
+| `:migration_source` | `"transforms"` | Tracking table name |
+| `:lock` | `Pollard.Lock.Postgres` | Lock strategy module |
+| `:log` | `true` | Log to stdout |
+
+## Lock Strategies
+
+### Postgres (default)
+
+```elixir
+Pollard.Runner.run(repo, path)
+Pollard.Runner.run(repo, path, lock: Pollard.Lock.Postgres, lock_key: 12345)
+```
+
+### None (single-node / SQLite)
+
+```elixir
+Pollard.Runner.run(repo, path, lock: Pollard.Lock.None)
+```
+
+### Custom
+
+```elixir
+defmodule MyApp.Lock.Redis do
+  @behaviour Pollard.Lock
+
+  @impl true
+  def acquire(_repo, _opts), do: :ok
+
+  @impl true
+  def release(_repo, _opts), do: :ok
+end
+```
+
+## Idempotency Patterns
+
+### Insert with conflict handling
+
+```elixir
+Repo.insert_all("table", rows, on_conflict: :nothing)
+```
+
+### Guarded update
+
+```elixir
+from(r in "rows", where: is_nil(r.migrated_at))
+|> Repo.update_all(set: [migrated_at: DateTime.utc_now()])
+```
+
+### Upsert
+
+```elixir
+Repo.insert(%Schema{id: id, name: name},
+  on_conflict: {:replace, [:name]},
+  conflict_target: :id
+)
+```
+
+### State check before update
+
+```elixir
+from(r in "rows", where: r.status == "pending")
+|> Repo.update_all(set: [status: "active"])
+```
+
+## Release Support
+
+```elixir
+defmodule MyApp.Release do
+  def transform do
+    Pollard.Runner.run(MyApp.Repo, transforms_path())
+  end
+
+  defp transforms_path do
+    Application.app_dir(:my_app, "priv/repo/transforms")
+  end
+end
+```
+
+### Deploy order
+
+```bash
+bin/migrate      # schema migrations
+bin/transform    # data transforms
+bin/server       # start app
+```
