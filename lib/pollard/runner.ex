@@ -81,7 +81,11 @@ defmodule Pollard.Runner do
           {:cont, :ok}
 
         {:error, name, reason} ->
-          log?(log?, "FAILED transform #{inspect(name)} in #{Path.basename(file)}: #{inspect(reason)}")
+          log?(
+            log?,
+            "FAILED transform #{inspect(name)} in #{Path.basename(file)}: #{inspect(reason)}"
+          )
+
           {:halt, {:error, name, reason}}
       end
     end)
@@ -96,14 +100,18 @@ defmodule Pollard.Runner do
     Enum.reduce_while(transforms, :ok, fn {name, func_name}, :ok ->
       log?(log?, "  -> #{name}")
 
-      case repo.transaction(fn -> apply(module, func_name, []) end) do
-        {:ok, _result} ->
-          {:cont, :ok}
-
-        {:error, reason} ->
-          {:halt, {:error, name, reason}}
+      case run_transform(repo, module, func_name) do
+        :ok -> {:cont, :ok}
+        {:error, reason} -> {:halt, {:error, name, reason}}
       end
     end)
+  end
+
+  defp run_transform(repo, module, func_name) do
+    case repo.transaction(fn -> apply(module, func_name, []) end) do
+      {:ok, _result} -> :ok
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   defp load_file(file) do
