@@ -13,6 +13,7 @@ defmodule Pollard.MixProject do
       deps: deps(),
       description: "Tracked, ordered, one-way data transformations for Ecto applications.",
       package: package(),
+      docs: docs(),
       source_url: @source_url
     ]
   end
@@ -28,6 +29,27 @@ defmodule Pollard.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0", optional: true},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Pollard",
+      source_ref: "v#{@version}",
+      source_url: @source_url,
+      extras: ["README.md"],
+      groups_for_modules: [
+        "Lock Strategies": [
+          Pollard.Lock,
+          Pollard.Lock.Postgres,
+          Pollard.Lock.None
+        ],
+        "Mix Tasks": [
+          Mix.Tasks.Pollard.Gen,
+          Mix.Tasks.Pollard.Gen.Migration,
+          Mix.Tasks.Pollard.Run
+        ]
+      ]
     ]
   end
 
