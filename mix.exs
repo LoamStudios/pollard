@@ -35,10 +35,10 @@ defmodule Pollard.MixProject do
 
   defp docs do
     [
-      main: "Pollard",
+      main: "readme",
       source_ref: "v#{@version}",
       source_url: @source_url,
-      extras: ["README.md"],
+      extras: ["README.md", "cheatsheets/cheatsheet.cheatmd"],
       groups_for_modules: [
         "Lock Strategies": [
           Pollard.Lock,
