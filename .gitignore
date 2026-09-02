@@ -22,3 +22,9 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 pollard-*.tar
 
+
+# Expert language server
+.expert/
+
+# macOS
+.DS_Store

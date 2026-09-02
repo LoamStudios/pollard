@@ -8,7 +8,7 @@ defmodule Pollard.MixProject do
     [
       app: :pollard,
       version: @version,
-      elixir: "~> 1.17",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: "Tracked, ordered, one-way data transformations for Ecto applications.",
@@ -29,7 +29,7 @@ defmodule Pollard.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0", optional: true},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.35", only: :dev, runtime: false}
     ]
   end
 

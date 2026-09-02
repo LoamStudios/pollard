@@ -1,82 +1,31 @@
 [tools]
 erlang = "29.0.6"
 elixir = "1.20.4-otp-29"
-hk = "latest"
+hk = "1.57.0"
 
 # =============================================================================
-# Code Quality
+# Code quality
 # =============================================================================
 
-[tasks.precommit-hook]
-run = "hk run pre-commit"
-description = "Run pre-commit hooks via hk"
-
-[tasks.format]
+[tasks.fix]
 run = "hk fix"
-description = "Format code using hk fix"
+description = "Format and auto-fix (changed files)"
+
+[tasks."fix:all"]
+run = "hk fix --all"
+description = "Format and auto-fix the whole repository"
 
 [tasks.check]
 run = "hk check"
-description = "Check code formatting without modifying files"
-
-[tasks."format:all"]
-run = "hk fix --all"
-description = "Format all files in the repository"
-
-[tasks."check:all"]
-run = "hk check --all"
-description = "Check formatting for all files in the repository"
-
-[tasks.credo]
-run = "mix credo"
-description = "Run static analysis"
-
-[tasks."credo:strict"]
-run = "mix credo --strict"
-description = "Run static analysis in strict mode"
-
-[tasks.lint]
-depends = ["check", "credo:strict"]
-description = "Check formatting + credo strict"
-
-# =============================================================================
-# Testing
-# =============================================================================
+description = "Format check, compile with warnings as errors, credo strict"
 
 [tasks.test]
 run = "mix test"
 description = "Run tests"
 
-# =============================================================================
-# Precommit
-# =============================================================================
-
-[tasks."precommit:format"]
-run = "mix format"
-description = "Format Elixir code"
-
-[tasks."precommit:compile"]
-depends = ["precommit:format"]
-run = "mix compile --warnings-as-errors"
-description = "Compile with warnings as errors"
-
-[tasks."precommit:credo"]
-depends = ["precommit:compile"]
-run = "mix credo --strict"
-description = "Run credo strict"
-
-[tasks."precommit:test"]
-depends = ["precommit:compile"]
-run = "mix test"
-description = "Run tests"
-
 [tasks.precommit]
-depends = ["precommit:credo", "precommit:test"]
-description = "Format, compile, then credo + tests in parallel"
-
-# =============================================================================
-# Signoff
-# =============================================================================
+depends = ["check", "test"]
+description = "Run all checks and the test suite"
 
 [tasks.signoff]
 depends = ["precommit"]
