@@ -1,5 +1,9 @@
 # Pollard
 
+[![Hex.pm](https://img.shields.io/hexpm/v/pollard.svg)](https://hex.pm/packages/pollard)
+[![Hexdocs](https://img.shields.io/badge/hexdocs-pollard-blue.svg)](https://hexdocs.pm/pollard)
+[![License](https://img.shields.io/hexpm/l/pollard.svg)](https://github.com/LoamStudios/pollard/blob/main/LICENSE)
+
 Tracked, ordered, one-way data transformations for Ecto applications. Mirrors the Ecto migration system — same conventions, same workflow — but for data, not schema.
 
 ## Installation

@@ -58,7 +58,7 @@ defmodule Pollard.MixProject do
     [
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url},
-      files: ~w(lib .formatter.exs mix.exs README.md LICENSE usage-rules.md)
+      files: ~w(lib cheatsheets .formatter.exs mix.exs README.md LICENSE usage-rules.md)
     ]
   end
 end
